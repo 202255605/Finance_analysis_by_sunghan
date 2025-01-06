@@ -1,0 +1,62 @@
+from pandas_datareader import data as pdr
+import yfinance as yf
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
+
+# 한글 폰트 설정
+font_path = 'C:/Windows/Fonts/HATTEN.ttf'  # Windows의 경우
+
+font_prop = fm.FontProperties(fname=font_path, size=12)
+plt.rc('font', family=font_prop.get_name())
+
+# yf.pdr_override()  # 필요에 따라 주석 해제
+
+// 사실 폰트 코드는 필요가 없어요 ~
+
+kospi = yf.download('^KS11', '2004-01-04')
+
+window = 252
+peak = kospi['Close'].rolling(window, min_periods=1).max()
+drawdown = kospi['Close'] / peak - 1.0
+max_dd = drawdown.rolling(window, min_periods=1).min()
+
+plt.figure(figsize=(9, 7))
+
+# 첫 번째 서브플롯
+plt.subplot(211)
+plt.plot(kospi['Close'], label='KOSPI', color='blue')
+plt.title('Daily close value chart')
+plt.grid(True)
+plt.legend()
+
+# 두 번째 서브플롯
+plt.subplot(212)
+plt.plot(drawdown, label='KOSPI DD', color='blue')
+plt.plot(max_dd, label='KOSPI MDD', color='red')
+plt.title("In windows peak, how much i fall away and what's MDD Day in Windows")
+plt.grid(True)
+plt.legend()
+
+# 레이아웃 조정
+plt.tight_layout()
+
+# 그래프 표시
+plt.show()
+
+
+#서브플롯들이 제대로 하나의 팝업에 잘 뜨지 않고 분산되서 뜨길래 이렇게 코드를 고쳤더니 아주 정갈하게 잘 뜨는 것을 확인했다 밑의 코드는 한글 출력값을 가미한 코드 설명이다 , 폰트 깨짐 문제 때문에 이렇게 실행하기는 어렵다.
+
+# 첫 번째 서브플롯
+plt.subplot(211)
+plt.plot(kospi['Close'], label='KOSPI', color='blue')
+plt.title('종가기록 차트 떨어지는 폭을 보면 대충 MDD예측 가능')
+plt.grid(True)
+plt.legend()
+
+# 두 번째 서브플롯
+plt.subplot(212)
+plt.plot(drawdown, label='KOSPI DD 각 날짜의 종가/역대 PEAK점 가격 즉 많이 떨어졌을 수록 당일의 종가가 낮았고 손실폭이 크다는말 ', color='blue')
+plt.plot(max_dd, label='WINDOW 기간 중 가장 손실폭이 큰 날을 표시 ', color='red')
+plt.title('손실폭이 파란색 , 최대 손실폭이 빨간색')
+plt.grid(True)
+plt.legend()
