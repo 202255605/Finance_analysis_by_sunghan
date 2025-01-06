@@ -1,0 +1,55 @@
+// 파이썬 기반의 코드로 작성할 것이며 git 설정을 하기에 시간이 조금 부족해 수기로 작성함
+
+import yfinance as yf
+import matplotlib.pyplot as plt
+
+# 삼성전자 데이터 가져오기
+sec = yf.download('005930.KS', start='2018-05-04')
+sec_dpc = (sec['Close'] - sec['Close'].shift(1)) / sec['Close'].shift(1) * 100
+sec_dpc.iloc[0] = 0  # 일간 변동률의 첫 번째 값인 NaN을 0으로 변경한다.
+sec_dpc_cp = ((100 + sec_dpc) / 100).cumprod() * 100 - 100  # 일간 변동률 누적곱 계산
+
+# Microsoft 데이터 가져오기
+msft = yf.download('MSFT', start='2018-05-04')
+msft_dpc = (msft['Close'] / msft['Close'].shift(1) - 1) * 100
+msft_dpc.iloc[0] = 0
+msft_dpc_cp = ((100 + msft_dpc) / 100).cumprod() * 100 - 100
+
+# 그래프 그리기
+plt.plot(sec.index, sec_dpc_cp, 'b', label='Samsung Electronics')
+plt.plot(msft.index, msft_dpc_cp, 'r--', label='Microsoft')
+plt.ylabel('Change %')
+plt.grid(True)
+plt.legend(loc='best')
+plt.show()
+
+
+// yfinance위주의 코드를 작성하기 전에는 pandas_datareader 기반의 코드를 작성했었는데 
+// 자꾸만 pandas_datareader이 문제를 일으키고, 데이터의 수신을 제대로 하지 못해 과감히 pandas.datareader.get_data_yahoo()를 버리고 yfinance.download()로 갈아탔다
+
+// 갈아타기 전 pandas_datareader을 이용한 코드
+
+from pandas_datareader import data as pdr
+
+import yfinance as yf
+
+"""  yf.pdr_override() """
+
+sec = pdr.get_data_yahoo('005930.KS', start='2018-05-04')
+sec_dpc = (sec['Close']-sec['Close'].shift(1)) / sec['Close'].shift(1) * 100
+sec_dpc.iloc[0] = 0 # 일간 변동률의 첫 번째 값인 NaN을 0으로 변경한다.
+sec_dpc_cp = ((100+sec_dpc)/100).cumprod()*100-100 # 일간 변동률 누적곱 계산
+
+msft = pdr.get_data_yahoo('MSFT', start='2018-05-04')
+msft_dpc = (msft['Close'] / msft['Close'].shift(1) -1) * 100
+msft_dpc.iloc[0] = 0
+msft_dpc_cp = ((100+msft_dpc)/100).cumprod()*100-100
+
+import matplotlib.pyplot as plt
+plt.plot(sec.index, sec_dpc_cp, 'b', label='Samsung Electronics')
+plt.plot(msft.index, msft_dpc_cp, 'r--', label='Microsoft')
+plt.ylabel('Change %')
+plt.grid(True)
+plt.legend(loc='best')
+plt.show() 
+
