@@ -60,3 +60,32 @@ plt.plot(max_dd, label='WINDOW 기간 중 가장 손실폭이 큰 날을 표시 
 plt.title('손실폭이 파란색 , 최대 손실폭이 빨간색')
 plt.grid(True)
 plt.legend()
+
+
+# 원래의 코드는 밑과 같았다 막상 실행해보니 그래프들이 다 튕겨져 나가서 위의 코드로 바꿔서 plot함수를 더 자세히 써준 것
+
+from pandas_datareader import data as pdr
+import yfinance as yf
+#yf.pdr_override()
+import matplotlib.pyplot as plt
+
+kospi = yf.download('^KS11', '2004-01-04')
+
+window = 252
+peak = kospi['Close'].rolling(window, min_periods=1).max()
+drawdown = kospi['Close']/peak - 1.0
+max_dd = drawdown.rolling(window, min_periods=1).min()
+ 
+plt.figure(figsize=(9, 7))
+
+plt.subplot(211)
+kospi['Close'].plot(label='KOSPI', title='KOSPI MDD', grid=True, legend=True)
+
+plt.subplot(212)
+drawdown.plot(c='blue', label='KOSPI DD', grid=True, legend=True)
+max_dd.plot(c='red', label='KOSPI MDD', grid=True, legend=True)
+
+plt.tight_layout()
+# 서브플롯간의 간격 자동 조정 , 그래프가 서로 겹치는 상황이 발생해 plot이 깨져서 subplot들이 떠다니는 경우에 사용
+
+plt.show()
