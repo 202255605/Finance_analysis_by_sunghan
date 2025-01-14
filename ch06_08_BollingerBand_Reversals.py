@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import MarketDB_codes_date_updated_final
 
 mk = MarketDB_codes_date_updated_final.MarketDB()
-df = mk.get_daily_price('SK하이닉스', '2020-01-02','2025-01-09',1)
+df = mk.get_daily_price('삼성전자', '2020-01-02','2025-01-09',1)
   
 df['MA20'] = df['close'].rolling(window=20).mean() 
 df['stddev'] = df['close'].rolling(window=20).std() 
